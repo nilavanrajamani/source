@@ -9,6 +9,8 @@ const ToDoListWithToolbar = ({
   searchText,
   setSearchText,
   children,
+  startTransition,
+  isPending
 }) => (
   <div>
     <ToDoFilterToolbar
@@ -18,6 +20,8 @@ const ToDoListWithToolbar = ({
       setImportant={setImportant}
       searchText={searchText}
       setSearchText={setSearchText}
+      startTransition={startTransition}
+      isPending={isPending}
     />
     {children}
   </div>

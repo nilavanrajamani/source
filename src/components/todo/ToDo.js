@@ -1,10 +1,15 @@
-const ToDo = ({
+import ErrorBoundary from "../common/ErrorBoundary";
+import ToDoItemText from "./ToDoItemText";
+import { memo } from "react";
+
+const Inner = ({
   todoItem,
   handleToggleCompleted,
   handleDelete,
   handleEdit,
   idUpdating,
 }) => {
+  console.log(`Todo: ${todoItem.id}: ${todoItem.todoText}`);
   return (
     <div
       key={todoItem.id}
@@ -17,12 +22,7 @@ const ToDo = ({
           return handleToggleCompleted(todoItem.id);
         }}
       >
-        {todoItem.important ? (
-          <span className="badge warning-bg">
-            <i className="fa fa-exclamation-circle"></i>
-          </span>
-        ) : null}
-        {todoItem.todoText}
+        <ToDoItemText important={todoItem.important} todoItemText={todoItem.todoText} />
       </div>
 
       {idUpdating === todoItem.id ? (
@@ -66,4 +66,27 @@ const ToDo = ({
   );
 };
 
-export default ToDo;
+const ToDoErrorBoundary = (props) => {
+  return (
+    <div className="single-task text-bg-danger">
+      {debug ? (<b>ERROR PROCESSING ToDo: {JSON.stringify(props)}</b>) : <b>Problem displaying message</b>}
+    </div>
+  );
+};
+
+const ToDo = (props) => {
+  return (
+    <ErrorBoundary errorUI={<ToDoErrorBoundary {...props}></ToDoErrorBoundary>}>
+      <Inner {...props} />
+    </ErrorBoundary>
+  );
+};
+
+export default memo(ToDo, (prevProps, nextProps) => {
+  return !(
+    prevProps.todoItem.completed != nextProps.todoItem.completed ||
+    prevProps.todoItem.important != nextProps.todoItem.important ||
+    prevProps.idUpdating === prevProps.todoItem.id ||
+    nextProps.idUpdating === nextProps.todoItem.id
+  );
+});
